@@ -45,7 +45,7 @@
             // btn_exit
             // 
             this.btn_exit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_exit.Location = new System.Drawing.Point(494, 378);
+            this.btn_exit.Location = new System.Drawing.Point(790, 378);
             this.btn_exit.Name = "btn_exit";
             this.btn_exit.Size = new System.Drawing.Size(75, 23);
             this.btn_exit.TabIndex = 0;
@@ -68,16 +68,19 @@
             // 
             this.tb_log_path.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.tb_log_path.BackColor = System.Drawing.Color.Black;
+            this.tb_log_path.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tb_log_path.ForeColor = System.Drawing.Color.White;
             this.tb_log_path.Location = new System.Drawing.Point(15, 29);
             this.tb_log_path.Name = "tb_log_path";
             this.tb_log_path.ReadOnly = true;
-            this.tb_log_path.Size = new System.Drawing.Size(469, 20);
+            this.tb_log_path.Size = new System.Drawing.Size(765, 20);
             this.tb_log_path.TabIndex = 2;
             // 
             // btn_select_file
             // 
             this.btn_select_file.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_select_file.Location = new System.Drawing.Point(494, 27);
+            this.btn_select_file.Location = new System.Drawing.Point(790, 27);
             this.btn_select_file.Name = "btn_select_file";
             this.btn_select_file.Size = new System.Drawing.Size(75, 23);
             this.btn_select_file.TabIndex = 3;
@@ -90,18 +93,23 @@
             this.rtb_feed.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.rtb_feed.BackColor = System.Drawing.Color.Black;
+            this.rtb_feed.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.rtb_feed.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rtb_feed.ForeColor = System.Drawing.Color.Lime;
+            this.rtb_feed.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.rtb_feed.Location = new System.Drawing.Point(15, 83);
             this.rtb_feed.Name = "rtb_feed";
             this.rtb_feed.ReadOnly = true;
-            this.rtb_feed.Size = new System.Drawing.Size(469, 318);
+            this.rtb_feed.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.rtb_feed.Size = new System.Drawing.Size(765, 318);
             this.rtb_feed.TabIndex = 4;
             this.rtb_feed.Text = "";
             // 
             // btn_status
             // 
             this.btn_status.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btn_status.Location = new System.Drawing.Point(494, 83);
+            this.btn_status.Location = new System.Drawing.Point(790, 83);
             this.btn_status.Name = "btn_status";
             this.btn_status.Size = new System.Drawing.Size(75, 23);
             this.btn_status.TabIndex = 5;
@@ -123,7 +131,7 @@
             // 
             this.cb_show_old.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cb_show_old.AutoSize = true;
-            this.cb_show_old.Location = new System.Drawing.Point(494, 113);
+            this.cb_show_old.Location = new System.Drawing.Point(790, 113);
             this.cb_show_old.Name = "cb_show_old";
             this.cb_show_old.Size = new System.Drawing.Size(76, 17);
             this.cb_show_old.TabIndex = 7;
@@ -135,7 +143,7 @@
             this.cb_show_npc_kills.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cb_show_npc_kills.AutoSize = true;
-            this.cb_show_npc_kills.Location = new System.Drawing.Point(494, 137);
+            this.cb_show_npc_kills.Location = new System.Drawing.Point(790, 137);
             this.cb_show_npc_kills.Name = "cb_show_npc_kills";
             this.cb_show_npc_kills.Size = new System.Drawing.Size(74, 17);
             this.cb_show_npc_kills.TabIndex = 8;
@@ -148,7 +156,7 @@
             this.cb_show_full_npc_names.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cb_show_full_npc_names.AutoSize = true;
-            this.cb_show_full_npc_names.Location = new System.Drawing.Point(504, 160);
+            this.cb_show_full_npc_names.Location = new System.Drawing.Point(800, 160);
             this.cb_show_full_npc_names.Name = "cb_show_full_npc_names";
             this.cb_show_full_npc_names.Size = new System.Drawing.Size(76, 17);
             this.cb_show_full_npc_names.TabIndex = 9;
@@ -158,7 +166,7 @@
             // bt_settings
             // 
             this.bt_settings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.bt_settings.Location = new System.Drawing.Point(494, 349);
+            this.bt_settings.Location = new System.Drawing.Point(790, 349);
             this.bt_settings.Name = "bt_settings";
             this.bt_settings.Size = new System.Drawing.Size(75, 23);
             this.bt_settings.TabIndex = 10;
@@ -171,7 +179,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.ClientSize = new System.Drawing.Size(578, 413);
+            this.ClientSize = new System.Drawing.Size(874, 413);
             this.Controls.Add(this.bt_settings);
             this.Controls.Add(this.cb_show_full_npc_names);
             this.Controls.Add(this.cb_show_npc_kills);
@@ -183,6 +191,7 @@
             this.Controls.Add(this.tb_log_path);
             this.Controls.Add(this.lb_game_log_path);
             this.Controls.Add(this.btn_exit);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimumSize = new System.Drawing.Size(500, 350);

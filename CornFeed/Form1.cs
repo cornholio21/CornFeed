@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +15,8 @@ namespace CornFeed
 {
     public partial class Form1 : Form
     {
+        //Vars
+
         private CancellationTokenSource _cancellationTokenSource;
         private CancellationTokenSource _processMonitorCts;
         private FileSystemWatcher _fileWatcher;
@@ -26,10 +28,157 @@ namespace CornFeed
         private Task _processMonitorTask;
         private bool isLoggerRestarted = false;
 
+        //Styling
+
+        private const int BORDER_SIZE = 8; // Thickness of the resize border
+        private const int WM_NCHITTEST = 0x84;
+        private const int HTLEFT = 10, HTRIGHT = 11, HTTOP = 12, HTTOPLEFT = 13, HTTOPRIGHT = 14;
+        private const int HTBOTTOM = 15, HTBOTTOMLEFT = 16, HTBOTTOMRIGHT = 17;
+        private const int HTCAPTION = 2;
+
+        //Window Moving
+
+        [DllImport("user32.dll")]
+        private static extern void ReleaseCapture();
+
+        [DllImport("user32.dll")]
+        private static extern void SendMessage(IntPtr hWnd, int msg, int wParam, int lParam);
+
+        private const int WM_NCLBUTTONDOWN = 0xA1;
+
+        //Functions
+
         public Form1()
         {
             InitializeComponent();
 
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            LoadConfig();
+        }
+
+        private void Form1_Closing(object sender, FormClosingEventArgs e)
+        {
+            Pre_exit_run();
+            _fileWatcher?.Dispose();
+        }
+
+        private void Pre_exit_run()
+        {
+            SaveConfig();
+        }
+
+        //Save config
+
+        private void SaveConfig()
+        {
+            try
+            {
+                string configFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CornFeed", "CornFeed.ini");
+                Directory.CreateDirectory(Path.GetDirectoryName(configFilePath));
+
+                File.WriteAllLines(configFilePath, new[]
+                {
+            $"LogPath={tb_log_path.Text}",
+            $"ShowOldEntries={cb_show_old.Checked}",
+            $"LogNPCs={cb_show_npc_kills.Checked}",
+            $"FullNPCNames={cb_show_full_npc_names.Checked}",
+            $"Width={Width}",
+            $"Height={Height}",
+            $"Left={Left}",
+            $"Top={Top}",
+            $"FeedColor={rtb_feed.ForeColor.ToArgb()}",
+            $"FeedBackground={rtb_feed.BackColor.ToArgb()}",
+            $"FeedFont={rtb_feed.Font.FontFamily.Name}",
+            $"FeedFontSize={rtb_feed.Font.Size}",
+            $"soundMode={soundSettings}",
+            $"WAVFilePath={soundWAVPath}"
+        });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to save config: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        //Load config
+
+        private void LoadConfig()
+        {
+            try
+            {
+                string configFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CornFeed", "CornFeed.ini");
+                if (!File.Exists(configFilePath)) return;
+
+                foreach (var line in File.ReadLines(configFilePath))
+                {
+                    string[] parts = line.Split(new[] { '=' }, 2);
+                    if (parts.Length < 2) continue;
+
+                    string key = parts[0], value = parts[1];
+
+                    switch (key)
+                    {
+                        case "LogPath": tb_log_path.Text = value; break;
+                        case "ShowOldEntries": cb_show_old.Checked = bool.TryParse(value, out var showOld) && showOld; break;
+                        case "LogNPCs":
+                            cb_show_npc_kills.Checked = bool.TryParse(value, out var logNpcs) && logNpcs;
+                            cb_show_full_npc_names.Enabled = cb_show_npc_kills.Checked;
+                            break;
+                        case "FullNPCNames": cb_show_full_npc_names.Checked = bool.TryParse(value, out var fullNpc) && fullNpc; break;
+                        case "Width": if (int.TryParse(value, out var width)) Width = width; break;
+                        case "Height": if (int.TryParse(value, out var height)) Height = height; break;
+                        case "Left": if (int.TryParse(value, out var left)) Left = left; break;
+                        case "Top": if (int.TryParse(value, out var top)) Top = top; break;
+                        case "FeedColor": if (int.TryParse(value, out var feedColor)) rtb_feed.ForeColor = Color.FromArgb(feedColor); break;
+                        case "FeedBackground": if (int.TryParse(value, out var feedBackground)) rtb_feed.BackColor = Color.FromArgb(feedBackground); break;
+                        case "FeedFont": rtb_feed.Font = new Font(value, rtb_feed.Font.Size); break;
+                        case "FeedFontSize": if (float.TryParse(value, out var feedSize)) rtb_feed.Font = new Font(rtb_feed.Font.FontFamily, feedSize); break;
+                        case "soundMode": if (int.TryParse(value, out var soundMode)) soundSettings = soundMode; break;
+                        case "WAVFilePath": soundWAVPath = value; break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load config: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        //Window Moving
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_NCHITTEST)
+            {
+                int x = (int)(m.LParam.ToInt64() & 0xFFFF);
+                int y = (int)((m.LParam.ToInt64() >> 16) & 0xFFFF);
+                Point cursor = PointToClient(new Point(x, y));
+
+                // Enable resizing
+                if (cursor.X <= BORDER_SIZE && cursor.Y <= BORDER_SIZE) m.Result = (IntPtr)HTTOPLEFT; // Top-left
+                else if (cursor.X >= Width - BORDER_SIZE && cursor.Y <= BORDER_SIZE) m.Result = (IntPtr)HTTOPRIGHT; // Top-right
+                else if (cursor.X <= BORDER_SIZE && cursor.Y >= Height - BORDER_SIZE) m.Result = (IntPtr)HTBOTTOMLEFT; // Bottom-left
+                else if (cursor.X >= Width - BORDER_SIZE && cursor.Y >= Height - BORDER_SIZE) m.Result = (IntPtr)HTBOTTOMRIGHT; // Bottom-right
+                else if (cursor.X <= BORDER_SIZE) m.Result = (IntPtr)HTLEFT; // Left
+                else if (cursor.X >= Width - BORDER_SIZE) m.Result = (IntPtr)HTRIGHT; // Right
+                else if (cursor.Y <= BORDER_SIZE) m.Result = (IntPtr)HTTOP; // Top
+                else if (cursor.Y >= Height - BORDER_SIZE) m.Result = (IntPtr)HTBOTTOM; // Bottom
+                else m.Result = (IntPtr)HTCAPTION; // Allow dragging the form
+                return;
+            }
+            base.WndProc(ref m);
+        }
+
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                ReleaseCapture();
+                SendMessage(this.Handle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+            }
         }
 
         public static bool IsNPC(string name)
@@ -46,6 +195,8 @@ namespace CornFeed
         {
             Close();
         }
+
+        //Select logfile
 
         private void btn_select_file_Click(object sender, EventArgs e)
         {
@@ -70,6 +221,8 @@ namespace CornFeed
             }
         }
 
+        //Start/Stop button
+
         private void btn_status_Click(object sender, EventArgs e)
         {
             if (btn_status.Text == "start")
@@ -82,6 +235,7 @@ namespace CornFeed
 
                 rtb_feed.Clear();
                 lastReadPosition = 0;
+                isLoggerRestarted = true;
                 StartLogMonitoring(tb_log_path.Text);
                 StartProcessMonitoring();
                 UpdateStatus("running", System.Drawing.Color.Lime);
@@ -95,6 +249,8 @@ namespace CornFeed
                 UpdateStatus("stopped", System.Drawing.Color.Orange);
             }
         }
+
+        //Start/stop monitoring
         
         private void StartLogMonitoring(string filePath)
         {
@@ -115,6 +271,8 @@ namespace CornFeed
             StartLogMonitoring(tb_log_path.Text);
             UpdateStatus("running", System.Drawing.Color.Lime);
         }
+
+        //Monitor Game.log file
 
         private async Task MonitorLogFile(string filePath, CancellationToken token)
         {
@@ -168,6 +326,8 @@ namespace CornFeed
             if (!cb_show_npc_kills.Checked) cb_show_full_npc_names.Enabled = false;
         }
 
+        //Parse lines of the log file, get timestamp and determine if Player or NPC is involved
+
         private string ParseLogLine(string line)
         {
             var timestampMatch = Regex.Match(line, @"<(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z)>");
@@ -218,6 +378,8 @@ namespace CornFeed
 
             return null;
         }
+
+        //UI Handler
 
         private void UpdateStatus(string status, System.Drawing.Color color)
         {
@@ -270,6 +432,8 @@ namespace CornFeed
             }
         }
 
+        //Add entry to the feed
+
         private void AppendToFeed(string message, bool playSound)
         {
             if (rtb_feed.InvokeRequired)
@@ -297,183 +461,7 @@ namespace CornFeed
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            LoadConfig();
-        }
-                
-        private void Form1_Closing(object sender, FormClosingEventArgs e)
-        {
-            Pre_exit_run();
-            _fileWatcher?.Dispose();
-        }
-
-        private void Pre_exit_run()
-        {
-            SaveConfig();
-        }
-
-        private void SaveConfig()
-        {
-            try
-            {
-                string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CornFeed");
-                string configFilePath = Path.Combine(appDataFolder, "CornFeed.ini");
-                Directory.CreateDirectory(appDataFolder);
-
-                var lines = new List<string>
-                {
-                    $"LogPath={tb_log_path.Text}",
-                    $"ShowOldEntries={cb_show_old.Checked}",
-                    $"LogNPCs={cb_show_npc_kills.Checked}",
-                    $"FullNPCNames={cb_show_full_npc_names.Checked}",
-                    $"Width={this.Width}",
-                    $"Height={this.Height}",
-                    $"Left={this.Left}",
-                    $"Top={this.Top}",
-                    $"FeedColor={rtb_feed.ForeColor.ToArgb()}",
-                    $"FeedBackground={rtb_feed.BackColor.ToArgb()}",
-                    $"FeedFont={rtb_feed.Font.FontFamily.Name}",
-                    $"FeedFontSize={rtb_feed.Font.Size}",
-                    $"soundMode={soundSettings}",
-                    $"WAVFilePath={soundWAVPath}"
-                };
-                File.WriteAllLines(configFilePath, lines);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to save config: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void LoadConfig()
-        {
-            try
-            {
-                string appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CornFeed");
-                string configFilePath = Path.Combine(appDataFolder, "CornFeed.ini");
-
-                if (!File.Exists(configFilePath)) return;
-
-                var lines = File.ReadAllLines(configFilePath);
-                foreach (var line in lines)
-                {
-                    if (line.StartsWith("LogPath="))
-                    {
-                        tb_log_path.Text = line.Substring("LogPath=".Length);
-                    }
-                    else if (line.StartsWith("ShowOldEntries="))
-                    {
-                        if (bool.TryParse(line.Substring("ShowOldEntries=".Length), out bool showOld))
-                        {
-                            cb_show_old.Checked = showOld;
-                        }
-                    }
-                    else if (line.StartsWith("LogNPCs="))
-                    {
-                        if (bool.TryParse(line.Substring("LogNPCs=".Length), out bool showOld))
-                        {
-                            cb_show_npc_kills.Checked = showOld;
-                            cb_show_full_npc_names.Enabled = showOld;
-                        }
-                    }
-                    else if (line.StartsWith("FullNPCNames="))
-                    {
-                        if (bool.TryParse(line.Substring("FullNPCNames=".Length), out bool showOld))
-                        {
-                            cb_show_full_npc_names.Checked = showOld;
-                        }
-                    }
-                    else if (line.StartsWith("Width="))
-                    {
-                        if (int.TryParse(line.Substring("Width=".Length), out int width))
-                        {
-                            this.Width = width;
-                        }
-                    }
-                    else if (line.StartsWith("Height="))
-                    {
-                        if (int.TryParse(line.Substring("Height=".Length), out int height))
-                        {
-                            this.Height = height;
-                        }
-                    }
-                    else if (line.StartsWith("Left="))
-                    {
-                        if (int.TryParse(line.Substring("Left=".Length), out int left))
-                        {
-                            this.Left = left;
-                        }
-                    }
-                    else if (line.StartsWith("Top="))
-                    {
-                        if (int.TryParse(line.Substring("Top=".Length), out int top))
-                        {
-                            this.Top = top;
-                        }
-                    }
-                    else if (line.StartsWith("FeedColor="))
-                    {
-                        string FeedColorString = line.Substring("FeedColor=".Length);
-                        try
-                        {
-                            rtb_feed.ForeColor = Color.FromArgb(int.Parse(FeedColorString));
-                        }
-                        catch (Exception ex)
-                        {
-                            // DEFAULT
-                        }
-                    }
-                    else if (line.StartsWith("FeedBackground="))
-                    {
-                        string FeedBackColorString = line.Substring("FeedBackground=".Length);
-                        try
-                        {
-                            rtb_feed.BackColor = Color.FromArgb(int.Parse(FeedBackColorString));
-
-                        }
-                        catch (Exception ex)
-                        {
-                            // DEFAULT
-                        }
-                    }
-                    else if (line.StartsWith("FeedFont="))
-                    {
-                        string FeedFontFamily = line.Substring("FeedFont=".Length);
-                        try
-                        {
-                            rtb_feed.Font = new Font(FeedFontFamily, rtb_feed.Font.Size);
-                        }
-                        catch (Exception ex)
-                        {
-                            // DEFAULT
-                        }
-                    }
-                    else if (line.StartsWith("FeedFontSize="))
-                    {
-                        if (int.TryParse(line.Substring("FeedFontSize=".Length), out int FeedSize))
-                        {
-                            rtb_feed.Font = new Font(rtb_feed.Font.FontFamily, FeedSize);
-                        }
-                    }
-                    else if (line.StartsWith("soundMode="))
-                    {
-                        if (int.TryParse(line.Substring("soundMode=".Length), out int soundMode))
-                        {
-                            soundSettings = soundMode;
-                        }
-                    }
-                    else if (line.StartsWith("WAVFilePath="))
-                    {
-                        soundWAVPath = line.Substring("WAVFilePath=".Length);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // NO
-            }
-        }
+        //Settings button
 
         private void bt_settings_Click(object sender, EventArgs e)
         {
@@ -504,6 +492,8 @@ namespace CornFeed
             }
         }
 
+        //Sound integration T0 LUL
+
         private void PlaySound()
         {
             if (!string.IsNullOrEmpty(soundWAVPath) && File.Exists(soundWAVPath))
@@ -527,6 +517,8 @@ namespace CornFeed
                 }
             }
         }
+
+        //SC process monitoring
 
         private void StartProcessMonitoring()
         {
