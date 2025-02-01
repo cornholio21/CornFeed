@@ -1,7 +1,5 @@
 # Simple GameLog Based Kill Feed for Star Citizen
 
-Current version: **1.1.1**
-
 A simple game log based kill feed for Star Citizen. Will add more features on request. Give me some feedback!
 
 ## Features:
