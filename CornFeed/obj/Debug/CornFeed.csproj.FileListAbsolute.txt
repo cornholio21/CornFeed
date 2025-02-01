@@ -1,0 +1,15 @@
+C:\Users\Anton\source\repos\CornFeed\CornFeed\bin\Debug\CornFeed.exe.config
+C:\Users\Anton\source\repos\CornFeed\CornFeed\bin\Debug\CornFeed.exe
+C:\Users\Anton\source\repos\CornFeed\CornFeed\bin\Debug\CornFeed.pdb
+C:\Users\Anton\source\repos\CornFeed\CornFeed\obj\Debug\CornFeed.csproj.AssemblyReference.cache
+C:\Users\Anton\source\repos\CornFeed\CornFeed\obj\Debug\CornFeed.Form1.resources
+C:\Users\Anton\source\repos\CornFeed\CornFeed\obj\Debug\CornFeed.Properties.Resources.resources
+C:\Users\Anton\source\repos\CornFeed\CornFeed\obj\Debug\CornFeed.csproj.GenerateResource.cache
+C:\Users\Anton\source\repos\CornFeed\CornFeed\obj\Debug\CornFeed.csproj.CoreCompileInputs.cache
+C:\Users\Anton\source\repos\CornFeed\CornFeed\obj\Debug\CornFeed.exe
+C:\Users\Anton\source\repos\CornFeed\CornFeed\obj\Debug\CornFeed.pdb
+C:\Users\Anton\source\repos\CornFeed\CornFeed\obj\Debug\CornFeed.SettingsForm.resources
+C:\Users\Anton\source\repos\CornFeed\CornFeed\bin\Debug\HtmlAgilityPack.dll
+C:\Users\Anton\source\repos\CornFeed\CornFeed\bin\Debug\HtmlAgilityPack.pdb
+C:\Users\Anton\source\repos\CornFeed\CornFeed\bin\Debug\HtmlAgilityPack.xml
+C:\Users\Anton\source\repos\CornFeed\CornFeed\obj\Debug\CornFeed.csproj.Up2Date

@@ -1,0 +1,6 @@
+ConfigPath=E:\Games\RSI\StarCitizen\LIVE\Game.log
+ShowOldEntries=True
+Width=964
+Height=630
+Left=-956
+Top=34
