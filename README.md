@@ -1,7 +1,9 @@
 A simple gamelog based kill feed for Star Citizen. Will add more features on request. Give me some feedback.
 
-Current version: **1.1.1**
-**Features:**
+Current version: 1.1.1
+
+Features:
+
 -Player vs Player kill feed
 -Suicides feed
 -NPC vs Player feed
@@ -13,18 +15,16 @@ Current version: **1.1.1**
 -StarCitizen process listener
 
 
-**Instructions:**
+Instructions:
+
 -Download and run CornFeed.exe
 -Select your Game.log file. Usually inside your LIVE/4.0_PREVIEW/PTU/EPTU folder.
 -Click "start"
 
-**Download **from my cloud:
-https://cloud.khonych.in/s/LbBn7kfBHYz3qbg
-
-**Roadmap **:DC_KeK::
+Roadmap:
 
 2025 Q1 - "One Click Intel" from RSI page
-~~2025 Q1 - Optional NPC kill-feed filter~~  :greencheck: 
+~~2025 Q1 - Optional NPC kill-feed filter~~ 
 2025 Q1 - Cargo sniffer
 2025 Q1 - Active players nearby
 2025 Q2 - Sound notifications with whitelist / blacklist
