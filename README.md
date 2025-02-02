@@ -2,6 +2,10 @@
 
 A simple game log based kill feed for Star Citizen. Will add more features on request. Give me some feedback!
 
+## Download:
+
+- https://github.com/cornholio21/CornFeed/releases/latest
+
 ## Features:
 
 - **Player vs Player kill feed**
