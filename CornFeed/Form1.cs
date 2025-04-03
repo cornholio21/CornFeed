@@ -153,8 +153,9 @@ namespace CornFeed
         {
             if (m.Msg == WM_NCHITTEST)
             {
-                int x = (int)(m.LParam.ToInt64() & 0xFFFF);
-                int y = (int)((m.LParam.ToInt64() >> 16) & 0xFFFF);
+                uint lparam32 = (uint)m.LParam.ToInt64();
+                short x = (short)((uint)lparam32 & 0xFFFF);
+                short y = (short)(((uint)lparam32 >> 16) & 0xFFFF);
                 Point cursor = PointToClient(new Point(x, y));
 
                 // Enable resizing
